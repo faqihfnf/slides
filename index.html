@@ -440,6 +440,10 @@
     }
 
     .frame {
+      /* Kotak ini harus persis 16:9 supaya player Google mengisinya penuh.
+         Dengan border-box (dari aturan * di atas), border 1px akan memakan
+         kotak itu dan rasionya meleset — karena itu .frame dikecualikan. */
+      box-sizing: content-box;
       border: 1px solid var(--border);
       background: var(--elevated);
       overflow: hidden;
@@ -584,7 +588,10 @@
       }
     ];
 
-    const OVERSCAN_STEPS = 1;
+    /* Lebihan iframe per sisi, dalam piksel. Gunanya hanya menutup garis
+       rambut gelap sisa pembulatan player Google — bukan memperbesar slide.
+       Tiap piksel di sini ikut memotong isi slide, jadi biarkan tetap kecil. */
+    const BLEED = 1;
 
     const list = document.getElementById("decks");
     const search = document.getElementById("search");
@@ -714,8 +721,10 @@
        Ini yang menghilangkan bilah hitam di dalam iframe: kotaknya dibuat
        persis serasio slide, jadi player Google tidak punya sisa untuk ditutup. */
     function fit() {
-      const availW = stage.clientWidth - parseFloat(getComputedStyle(stage).paddingLeft) * 2;
-      const availH = stage.clientHeight - parseFloat(getComputedStyle(stage).paddingTop) * 2;
+      // -2 di tiap sumbu: border 1px .frame ada di luar kotak 16:9 (content-box),
+      // jadi ruangnya harus disisakan di sini.
+      const availW = stage.clientWidth - parseFloat(getComputedStyle(stage).paddingLeft) * 2 - 2;
+      const availH = stage.clientHeight - parseFloat(getComputedStyle(stage).paddingTop) * 2 - 2;
 
       // Kelipatan 16 dan 9 supaya rasionya persis, tanpa pecahan piksel yang
       // akan ditutup hitam oleh player Google.
@@ -727,19 +736,18 @@
         w = slideH * 16 / 9;
       }
 
-      // Iframe dilebihkan dalam kelipatan yang menjaga rasio 16:9 dan membuat
-      // semua angka tetap bulat, lalu digeser supaya tepinya terpotong rapi.
-      const iw = w + 32 * OVERSCAN_STEPS;
-      const isH = iw * 9 / 16;              // bulat, karena iw kelipatan 16
-      const lift = 9 * OVERSCAN_STEPS;       // pergeseran ke atas, juga bulat
+      // Iframe dilebihkan tipis di tiap sisi lalu digeser ke tengah, supaya
+      // tepi pembulatan terpotong. Rasionya tetap 16:9 persis.
+      const iw = w + BLEED * 2;
+      const ih = iw * 9 / 16;
 
       frame.style.width = w + "px";
       frame.style.height = slideH + "px";
 
       viewer.style.width = iw + "px";
-      viewer.style.height = isH + "px";
-      viewer.style.marginLeft = -(16 * OVERSCAN_STEPS) + "px";
-      viewer.style.marginTop = -lift + "px";
+      viewer.style.height = ih + "px";
+      viewer.style.marginLeft = -BLEED + "px";
+      viewer.style.marginTop = -((ih - slideH) / 2) + "px";
     }
 
     /* Arahkan fokus keyboard ke dalam iframe begitu slide selesai dimuat,
