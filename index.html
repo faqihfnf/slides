@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Slide — Faqih Nur Fahmi</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap"
+    rel="stylesheet">
+
+  <!-- Token brand faqih.id. Selama brand.css belum live, nilai fallback di
+     bawah yang dipakai, jadi tampilan tetap benar saat dites lokal. -->
+  <link rel="stylesheet" href="https://faqih.id/brand.css">
+
+  <style>
+    :root {
+      --bg: var(--brand-bg, #F4F3EF);
+      --elevated: var(--brand-bg-elevated, #ECEBE5);
+      --text: var(--brand-text, #1B1C1E);
+      --secondary: var(--brand-text-secondary, #4A4A46);
+      --muted: var(--brand-text-muted, #8B897F);
+      --border: var(--brand-border, #D8D6CE);
+      --accent: var(--brand-accent, #8A6F3F);
+      --sans: var(--brand-font-body, 'Inter', system-ui, sans-serif);
+      --serif: var(--brand-font-display, 'Fraunces', Georgia, serif);
+
+      --rail: 288px;
+    }
+
+    /* Tanpa pilihan manual: ikut setelan sistem (dan brand.css bila sudah live) */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: var(--brand-bg, #1B1C1E);
+        --elevated: var(--brand-bg-elevated, #202124);
+        --text: var(--brand-text, #EDEBE4);
+        --secondary: var(--brand-text-secondary, #A5A39A);
+        --muted: var(--brand-text-muted, #86847A);
+        --border: var(--brand-border, #2E2F31);
+        --accent: var(--brand-accent, #A2895B);
+      }
+    }
+
+    /* Dipaksa lewat tombol. Nilainya ditulis eksplisit, tidak lewat
+     var(--brand-*), karena brand.css menentukan gelap/terang berdasarkan
+     setelan sistem — kalau dirantaikan, pilihan manual akan kalah. */
+    :root[data-theme="dark"] {
+      --bg: #1B1C1E;
+      --elevated: #202124;
+      --text: #EDEBE4;
+      --secondary: #A5A39A;
+      --muted: #86847A;
+      --border: #2E2F31;
+      --accent: #A2895B;
+    }
+
+    :root[data-theme="light"] {
+      --bg: #F4F3EF;
+      --elevated: #ECEBE5;
+      --text: #1B1C1E;
+      --secondary: #4A4A46;
+      --muted: #8B897F;
+      --border: #D8D6CE;
+      --accent: #8A6F3F;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .shell {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ---------- Rail ---------- */
+
+    .rail {
+      width: var(--rail);
+      flex-shrink: 0;
+      background: var(--elevated);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transition: margin-left .28s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .rail[hidden-rail] {
+      margin-left: calc(var(--rail) * -1);
+    }
+
+    .rail-head {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rail-head h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .rail-head p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .search-wrap {
+      padding: 14px 16px;
+    }
+
+    .search {
+      width: 100%;
+      height: 34px;
+      padding: 0 10px;
+      font: inherit;
+      font-size: 13.5px;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .search::placeholder {
+      color: var(--muted);
+    }
+
+    .search:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .decks {
+      list-style: none;
+      margin: 0;
+      padding: 0 12px 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .group-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      background: none;
+      border: 0;
+      padding: 10px 6px;
+      cursor: pointer;
+      font: inherit;
+      font-family: var(--serif);
+      font-size: 14px;
+      font-style: italic;
+      color: var(--secondary);
+      text-align: left;
+    }
+
+    .group-head:hover {
+      color: var(--text);
+    }
+
+    .group-head .chev {
+      width: 13px;
+      height: 13px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+
+    .group-head[aria-expanded="false"] .chev {
+      transform: rotate(-90deg);
+    }
+
+    .group-head .count {
+      margin-left: auto;
+      font-family: var(--sans);
+      font-style: normal;
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    .group-items {
+      list-style: none;
+      margin: 0 0 4px;
+      padding: 0;
+    }
+
+    .group-items[hidden] {
+      display: none;
+    }
+
+    .shortcut-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      background: none;
+      border: 0;
+      border-top: 1px solid var(--border);
+      padding: 14px 18px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      color: var(--muted);
+      text-align: left;
+      flex-shrink: 0;
+      transition: color .15s;
+    }
+
+    .shortcut-btn:hover {
+      color: var(--text);
+    }
+
+    .shortcut-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6;
+      flex-shrink: 0;
+    }
+
+    .sheet {
+      position: fixed;
+      margin: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--elevated);
+      color: var(--text);
+      padding: 18px 18px 14px;
+      box-shadow: 0 10px 34px rgba(0, 0, 0, .24);
+    }
+
+    /* Latar dibiarkan bening: popup ini menempel pada tombolnya, bukan dialog
+     besar di tengah layar. Tetap dipakai supaya Esc dan klik di luar bekerja. */
+    .sheet::backdrop {
+      background: transparent;
+    }
+
+    .sheet h3 {
+      margin: 0 0 10px;
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .sheet ul {
+      list-style: none;
+      margin: 0 0 14px;
+      padding: 0;
+    }
+
+    .sheet li {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 6px 0;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sheet li:last-child {
+      border-bottom: 0;
+    }
+
+    .sheet li span {
+      color: var(--secondary);
+    }
+
+    .sheet kbd {
+      font-family: var(--sans);
+      font-size: 12.5px;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .sheet .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .empty {
+      padding: 14px 8px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .deck {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: 0;
+      border-left: 2px solid transparent;
+      padding: 12px 14px;
+      cursor: pointer;
+      font: inherit;
+      color: var(--secondary);
+      border-radius: 0 4px 4px 0;
+      transition: color .15s, background .15s, border-color .15s;
+    }
+
+    .deck:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .deck strong {
+      display: block;
+      font-weight: 500;
+      font-size: 14.5px;
+      line-height: 1.4;
+      color: inherit;
+    }
+
+    .deck span {
+      display: block;
+      margin-top: 3px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .deck[aria-current="true"] {
+      background: var(--bg);
+      border-left-color: var(--accent);
+      color: var(--text);
+    }
+
+    .deck[aria-current="true"] strong {
+      color: var(--accent);
+    }
+
+    .deck mark {
+      background: none;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ---------- Main ---------- */
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .bar h2 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 400;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--secondary);
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: border-color .15s, color .15s;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6;
+    }
+
+    .btn-icon {
+      padding: 0;
+      width: 32px;
+      justify-content: center;
+    }
+
+    /* ---------- Stage ---------- */
+
+    .stage {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      min-height: 0;
+      background: var(--bg);
+    }
+
+    .frame {
+      border: 1px solid var(--border);
+      background: var(--elevated);
+      overflow: hidden;
+      line-height: 0;
+    }
+
+    .frame iframe {
+      border: 0;
+      display: block;
+    }
+
+    /* Saat fullscreen: buang padding & border supaya slide semaksimal mungkin,
+     dan sisa ruang tetap memakai warna brand, bukan hitam. */
+    .stage:fullscreen {
+      padding: 0;
+      background: var(--bg);
+    }
+
+    .stage:fullscreen .frame {
+      border: 0;
+    }
+
+    @media (max-width: 720px) {
+      :root {
+        --rail: 260px;
+      }
+
+      .rail {
+        position: absolute;
+        z-index: 5;
+        height: 100%;
+      }
+
+      .stage {
+        padding: 10px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .rail {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="shell">
+
+    <nav class="rail" id="rail" aria-label="Daftar slide">
+      <div class="rail-head">
+        <h1>Slide</h1>
+        <p>Materi pelatihan dan presentasi</p>
+      </div>
+      <div class="search-wrap">
+        <input class="search" id="search" type="search" placeholder="Cari judul slide" aria-label="Cari judul slide"
+          autocomplete="off">
+      </div>
+      <ul class="decks" id="decks"></ul>
+
+      <button class="shortcut-btn" id="shortcutBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="6" width="20" height="12" rx="2" />
+          <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8" stroke-linecap="round" />
+        </svg>
+        Pintasan keyboard
+      </button>
+    </nav>
+
+    <div class="main">
+      <div class="bar">
+        <button class="btn btn-icon" id="railToggle" aria-label="Tampilkan atau sembunyikan daftar slide">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+          </svg>
+        </button>
+        <h2 id="nowPlaying">Pilih slide</h2>
+        <button class="btn btn-icon" id="themeBtn" aria-label="Ganti tema terang atau gelap">
+          <svg id="themeIcon" viewBox="0 0 24 24"></svg>
+        </button>
+        <button class="btn" id="fsBtn">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Slideshow
+        </button>
+      </div>
+
+      <div class="stage" id="stage">
+        <div class="frame" id="frame">
+          <iframe id="viewer" title="Slide" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <dialog class="sheet" id="shortcutSheet" aria-label="Pintasan keyboard">
+    <h3>Pintasan keyboard</h3>
+    <ul>
+      <li><span>Laser pointer</span><kbd>L</kbd></li>
+      <li><span>Pen</span><kbd>Shift + L</kbd></li>
+      <li><span>Hapus semua coretan</span><kbd>Shift + A</kbd></li>
+      <li><span>Slide berikutnya</span><kbd>&rarr; / Spasi</kbd></li>
+      <li><span>Slide sebelumnya</span><kbd>&larr;</kbd></li>
+      <li><span>Layar hitam / putih</span><kbd>B / W</kbd></li>
+      <li><span>Loncat ke slide</span><kbd>Angka, Enter</kbd></li>
+    </ul>
+    <button class="btn" id="shortcutClose">Tutup</button>
+  </dialog>
+
+  <script>
+    /* ------------------------------------------------------------------
+       DAFTAR SLIDE — tambah entri baru di sini.
+       category = kelompok di sidebar. Tidak perlu didaftarkan terpisah;
+                  urutan kelompok mengikuti kemunculan pertamanya di sini.
+       embedId  = bagian panjang setelah /presentation/d/e/ dan sebelum /pubembed
+       slug     = dipakai untuk URL, contoh slides.faqih.id/#uraian-jabatan
+    ------------------------------------------------------------------- */
+    const DECKS = [
+      {
+        category: "HR",
+        slug: "uraian-jabatan",
+        title: "Menyusun Uraian Jabatan",
+        note: "Sertifikasi BNSP",
+        embedId: "2PACX-1vQDxR2kD3Spd1QZfeT2-KV1_Ew8cJglFVrTES8gSYZ1G3AKLXJlq2K2iMUi_7W9K4U7jU7Ap8Sf66js"
+      },
+      {
+        category: "HR",
+        slug: "slide-kedua",
+        title: "Judul slide kedua",
+        note: "Ganti sesuai isi",
+        embedId: "2PACX-1vSaeyjc7ygldrj2yN5udMGJUKOpTd3DVvXu_YCZzdx31LG74ssDlTR0OYgcgq8Aj9OR-ls6NOFVLFQV"
+      },
+      {
+        category: "Tech",
+        slug: "contoh-tech",
+        title: "Contoh slide kategori Tech",
+        note: "Ganti judul dan embedId dengan slide anda",
+        embedId: "2PACX-1vSaeyjc7ygldrj2yN5udMGJUKOpTd3DVvXu_YCZzdx31LG74ssDlTR0OYgcgq8Aj9OR-ls6NOFVLFQV"
+      }
+    ];
+
+    const OVERSCAN_STEPS = 1;
+
+    const list = document.getElementById("decks");
+    const search = document.getElementById("search");
+    const viewer = document.getElementById("viewer");
+    const label = document.getElementById("nowPlaying");
+    const stage = document.getElementById("stage");
+    const frame = document.getElementById("frame");
+    const rail = document.getElementById("rail");
+
+    let activeSlug = null;
+
+    function embedUrl(deck) {
+      const params = new URLSearchParams({ start: "false", loop: "false", delayms: "3000", rm: "minimal" });
+      return `https://docs.google.com/presentation/d/e/${deck.embedId}/pubembed?${params}`;
+    }
+
+    /* Kategori yang sedang terbuka. Mulai kosong: semua tertutup saat halaman
+       dibuka, kecuali kategori dari slide yang sedang ditampilkan. */
+    const expanded = new Set();
+
+    /* Tandai potongan judul yang cocok dengan kata kunci */
+    function highlight(text, query) {
+      if (!query) return document.createTextNode(text);
+      const at = text.toLowerCase().indexOf(query);
+      if (at < 0) return document.createTextNode(text);
+
+      const wrap = document.createDocumentFragment();
+      wrap.append(text.slice(0, at));
+      const mark = document.createElement("mark");
+      mark.textContent = text.slice(at, at + query.length);
+      wrap.append(mark, text.slice(at + query.length));
+      return wrap;
+    }
+
+    function matches(deck, query) {
+      if (!query) return true;
+      return [deck.title, deck.note, deck.category]
+        .filter(Boolean)
+        .some(field => field.toLowerCase().includes(query));
+    }
+
+    function render() {
+      const query = search.value.trim().toLowerCase();
+      list.innerHTML = "";
+
+      const groups = new Map();
+      DECKS.filter(deck => matches(deck, query)).forEach(deck => {
+        const key = deck.category || "Lainnya";
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(deck);
+      });
+
+      if (groups.size === 0) {
+        const li = document.createElement("li");
+        li.className = "empty";
+        li.textContent = "Tidak ada slide yang cocok dengan pencarian itu.";
+        list.appendChild(li);
+        return;
+      }
+
+      groups.forEach((decks, category) => {
+        // Saat mencari, semua kelompok dibuka supaya hasilnya langsung terlihat
+        const isOpen = query ? true : expanded.has(category);
+
+        const li = document.createElement("li");
+
+        const head = document.createElement("button");
+        head.className = "group-head";
+        head.setAttribute("aria-expanded", String(isOpen));
+        head.innerHTML =
+          `<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+       <span></span><span class="count"></span>`;
+        head.querySelector("span").textContent = category;
+        head.querySelector(".count").textContent = decks.length;
+        head.addEventListener("click", () => {
+          if (expanded.has(category)) expanded.delete(category);
+          else expanded.add(category);
+          render();
+        });
+
+        const items = document.createElement("ul");
+        items.className = "group-items";
+        items.hidden = !isOpen;
+
+        decks.forEach(deck => {
+          const itemLi = document.createElement("li");
+          const btn = document.createElement("button");
+          btn.className = "deck";
+          btn.dataset.slug = deck.slug;
+          btn.setAttribute("aria-current", String(deck.slug === activeSlug));
+
+          const title = document.createElement("strong");
+          title.appendChild(highlight(deck.title, query));
+          const note = document.createElement("span");
+          note.textContent = deck.note || "";
+
+          btn.append(title, note);
+          btn.addEventListener("click", () => open(deck.slug));
+          itemLi.appendChild(btn);
+          items.appendChild(itemLi);
+        });
+
+        li.append(head, items);
+        list.appendChild(li);
+      });
+    }
+
+    function open(slug) {
+      const deck = DECKS.find(d => d.slug === slug) || DECKS[0];
+      activeSlug = deck.slug;
+
+      const url = embedUrl(deck);
+      if (viewer.src !== url) viewer.src = url;
+
+      label.textContent = deck.title;
+      document.title = `${deck.title} — Faqih Nur Fahmi`;
+
+      expanded.add(deck.category || "Lainnya"); // kategori slide aktif ikut terbuka
+
+      if (location.hash.slice(1) !== deck.slug) {
+        history.replaceState(null, "", "#" + deck.slug);
+      }
+      render();
+    }
+
+    /* Hitung ukuran terbesar yang masih muat, dengan rasio 16:9 dipertahankan.
+       Ini yang menghilangkan bilah hitam di dalam iframe: kotaknya dibuat
+       persis serasio slide, jadi player Google tidak punya sisa untuk ditutup. */
+    function fit() {
+      const availW = stage.clientWidth - parseFloat(getComputedStyle(stage).paddingLeft) * 2;
+      const availH = stage.clientHeight - parseFloat(getComputedStyle(stage).paddingTop) * 2;
+
+      // Kelipatan 16 dan 9 supaya rasionya persis, tanpa pecahan piksel yang
+      // akan ditutup hitam oleh player Google.
+      let w = Math.floor(availW / 16) * 16;
+      let slideH = w * 9 / 16;
+
+      if (slideH > availH) {
+        slideH = Math.floor(availH / 9) * 9;
+        w = slideH * 16 / 9;
+      }
+
+      // Iframe dilebihkan dalam kelipatan yang menjaga rasio 16:9 dan membuat
+      // semua angka tetap bulat, lalu digeser supaya tepinya terpotong rapi.
+      const iw = w + 32 * OVERSCAN_STEPS;
+      const isH = iw * 9 / 16;              // bulat, karena iw kelipatan 16
+      const lift = 9 * OVERSCAN_STEPS;       // pergeseran ke atas, juga bulat
+
+      frame.style.width = w + "px";
+      frame.style.height = slideH + "px";
+
+      viewer.style.width = iw + "px";
+      viewer.style.height = isH + "px";
+      viewer.style.marginLeft = -(16 * OVERSCAN_STEPS) + "px";
+      viewer.style.marginTop = -lift + "px";
+    }
+
+    /* Arahkan fokus keyboard ke dalam iframe begitu slide selesai dimuat,
+       supaya tombol panah langsung bisa dipakai tanpa mengklik slide dulu. */
+    viewer.addEventListener("load", () => viewer.focus());
+
+    document.getElementById("railToggle").addEventListener("click", () => {
+      rail.toggleAttribute("hidden-rail");
+      setTimeout(fit, 300);
+    });
+
+    document.getElementById("fsBtn").addEventListener("click", () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else stage.requestFullscreen();
+    });
+
+    /* ---------- Tema ---------- */
+
+    const ICON_SUN = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke-linecap="round"/>';
+    const ICON_MOON = '<path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" stroke-linejoin="round"/>';
+
+    function currentlyDark() {
+      const forced = document.documentElement.getAttribute("data-theme");
+      if (forced === "dark") return true;
+      if (forced === "light") return false;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+
+    function paintThemeIcon() {
+      // Ikon menunjukkan tujuan perpindahan, bukan keadaan sekarang
+      document.getElementById("themeIcon").innerHTML = currentlyDark() ? ICON_SUN : ICON_MOON;
+    }
+
+    document.getElementById("themeBtn").addEventListener("click", () => {
+      const next = currentlyDark() ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("slide-theme", next); } catch (e) { /* penyimpanan diblokir */ }
+      paintThemeIcon();
+    });
+
+    (function restoreTheme() {
+      let saved = null;
+      try { saved = localStorage.getItem("slide-theme"); } catch (e) { /* abaikan */ }
+      if (saved === "dark" || saved === "light") {
+        document.documentElement.setAttribute("data-theme", saved);
+      }
+      paintThemeIcon();
+    })();
+
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paintThemeIcon);
+
+    /* ---------- Popup pintasan ---------- */
+
+    const sheet = document.getElementById("shortcutSheet");
+    const shortcutBtn = document.getElementById("shortcutBtn");
+
+    /* Tempelkan popup tepat di atas tombolnya, dengan lebar mengikuti sidebar. */
+    function placeSheet() {
+      const b = shortcutBtn.getBoundingClientRect();
+      sheet.style.width = b.width + "px";
+      sheet.style.left = b.left + "px";
+      sheet.style.bottom = (window.innerHeight - b.top + 6) + "px";
+      sheet.style.top = "auto";
+    }
+
+    shortcutBtn.addEventListener("click", () => {
+      sheet.showModal();
+      placeSheet();
+    });
+    document.getElementById("shortcutClose").addEventListener("click", () => sheet.close());
+
+    // Klik di luar kotak ikut menutup popup
+    sheet.addEventListener("click", e => {
+      const box = sheet.getBoundingClientRect();
+      const diLuar =
+        e.clientX < box.left || e.clientX > box.right ||
+        e.clientY < box.top || e.clientY > box.bottom;
+      if (diLuar) sheet.close();
+    });
+
+    // Jaga posisinya tetap menempel saat ukuran jendela berubah
+    window.addEventListener("resize", () => { if (sheet.open) placeSheet(); });
+
+    search.addEventListener("input", render);
+    search.addEventListener("keydown", e => {
+      if (e.key === "Escape") { search.value = ""; render(); }
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      setTimeout(() => {
+        fit();
+        viewer.focus(); // supaya tombol panah langsung jalan tanpa klik dulu
+      }, 60);
+    });
+    window.addEventListener("resize", fit);
+    window.addEventListener("hashchange", () => open(location.hash.slice(1)));
+
+    open(location.hash.slice(1));
+    fit();
+  </script>
+
+</body>
+
+</html>
