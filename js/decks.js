@@ -13,24 +13,24 @@
 
 const DECKS = [
   {
-    category: "HR",
-    slug: "uraian-jabatan",
-    title: "Menyusun Uraian Jabatan",
+    category: "BNSP",
+    slug: "hr-manager-bnsp",
+    title: "HR Manager BNSP",
     note: "Sertifikasi BNSP",
-    embedId: "2PACX-1vQDxR2kD3Spd1QZfeT2-KV1_Ew8cJglFVrTES8gSYZ1G3AKLXJlq2K2iMUi_7W9K4U7jU7Ap8Sf66js"
+    embedId: "2PACX-1vQDxR2kD3Spd1QZfeT2-KV1_Ew8cJglFVrTES8gSYZ1G3AKLXJlq2K2iMUi_7W9K4U7jU7Ap8Sf66js",
+  },
+  {
+    category: "BNSP",
+    slug: "hr-supervisor-bnsp",
+    title: "HR Supervisor BNSP",
+    note: "Sertifikasi BNSP",
+    embedId: "2PACX-1vSaeyjc7ygldrj2yN5udMGJUKOpTd3DVvXu_YCZzdx31LG74ssDlTR0OYgcgq8Aj9OR-ls6NOFVLFQV",
   },
   {
     category: "HR",
-    slug: "slide-kedua",
-    title: "Judul slide kedua",
-    note: "Ganti sesuai isi",
-    embedId: "2PACX-1vSaeyjc7ygldrj2yN5udMGJUKOpTd3DVvXu_YCZzdx31LG74ssDlTR0OYgcgq8Aj9OR-ls6NOFVLFQV"
+    slug: "basic-payroll-process",
+    title: "Basic Payroll Process",
+    note: "Siklus payroll dari awal sampai akhir",
+    embedId: "2PACX-1vTo1pzhTXXCG63GjJKBf_LdOoGGmGf8T1_xEtFNJsMBh8sWDCxz7TC2C0p8nOLdcKe6TTV5FyQOqKqE",
   },
-  {
-    category: "Tech",
-    slug: "contoh-tech",
-    title: "Contoh slide kategori Tech",
-    note: "Ganti judul dan embedId dengan slide anda",
-    embedId: "2PACX-1vSaeyjc7ygldrj2yN5udMGJUKOpTd3DVvXu_YCZzdx31LG74ssDlTR0OYgcgq8Aj9OR-ls6NOFVLFQV"
-  }
 ];
