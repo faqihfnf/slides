@@ -452,6 +452,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 7px;
+  text-decoration: none;
   transition:
     border-color 0.15s,
     color 0.15s;

@@ -12,6 +12,15 @@
    locked   : opsional. Kalau true, slide tetap tampil di sidebar (dengan
               ikon gembok) tapi butuh password untuk dibuka — lihat
               js/auth.js untuk mengatur/mengganti passwordnya.
+   fileId   : opsional. ID ASLI file Google Slides (beda dari embedId di
+              atas, yang cuma ID hasil "Publish to web"). Diambil dari alamat
+              biasa saat file dibuka di Google Slides, contoh:
+              docs.google.com/presentation/d/INI_FILE_ID_NYA/edit
+              Kalau diisi (dan locked bukan true), tombol Download muncul di
+              bilah atas dan mengarah ke .../export/pdf pakai id ini. Syarat
+              di Google Drive: file harus di-share "Anyone with the link"
+              (minimal Viewer) dan opsi "Disable download/print/copy" untuk
+              viewer JANGAN dicentang, kalau tidak downloadnya ditolak.
 */
 
 const DECKS = [
@@ -37,5 +46,6 @@ const DECKS = [
     title: "Basic Payroll Process",
     note: "Siklus payroll dari awal sampai akhir",
     embedId: "2PACX-1vTo1pzhTXXCG63GjJKBf_LdOoGGmGf8T1_xEtFNJsMBh8sWDCxz7TC2C0p8nOLdcKe6TTV5FyQOqKqE",
+    fileId: "1Nr12iPOY-XXmt8Nfu2k3LHGKLjUopC5dFME3jgRiKqY",
   },
 ];

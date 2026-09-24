@@ -3,6 +3,7 @@
 (() => {
   const label = document.getElementById("nowPlaying");
   const rail = document.getElementById("rail");
+  const downloadBtn = document.getElementById("downloadBtn");
 
   // Slide pembuka default: yang pertama tanpa kunci, supaya orang yang baru
   // buka situs tanpa alamat spesifik tidak langsung disambut prompt password.
@@ -24,6 +25,15 @@
       history.replaceState(null, "", `#${deck.slug}`);
     }
     Sidebar.setActive(deck);
+
+    // Tombol download cuma muncul untuk slide yang tidak dikunci DAN punya
+    // fileId (ID asli file, bukan publish-id — publish-id tidak bisa dipakai
+    // untuk URL export PDF). Lihat catatan fileId di decks.js.
+    const canDownload = !deck.locked && !!deck.fileId;
+    downloadBtn.hidden = !canDownload;
+    downloadBtn.href = canDownload
+      ? `https://docs.google.com/presentation/d/${deck.fileId}/export/pdf`
+      : "#";
 
     if (deck.locked && !Auth.isUnlocked()) {
       Viewer.lock(() => unlockAndShow(deck));

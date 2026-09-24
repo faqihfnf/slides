@@ -65,15 +65,23 @@
 
         <h2 id="nowPlaying">Pilih slide</h2>
 
-        <button class="btn btn-icon" id="themeBtn" aria-label="Ganti tema terang atau gelap">
-          <svg id="themeIcon" viewBox="0 0 24 24"></svg>
-        </button>
+        <a class="btn" id="downloadBtn" target="_blank" rel="noopener" hidden>
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3a1 1 0 001 1h14a1 1 0 001-1v-3"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Download
+        </a>
 
         <button class="btn" id="fsBtn">
           <svg viewBox="0 0 24 24">
             <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
           Slideshow
+        </button>
+
+        <button class="btn btn-icon" id="themeBtn" aria-label="Ganti tema terang atau gelap">
+          <svg id="themeIcon" viewBox="0 0 24 24"></svg>
         </button>
       </div>
 
