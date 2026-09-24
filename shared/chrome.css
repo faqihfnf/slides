@@ -86,6 +86,16 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+/* Tombol tutup sidebar, hanya di layar sempit (lihat Responsif): di sana
+   sidebar menutupi tombol menu, jadi perlu jalan keluar yang terlihat.
+   Posisinya menempel ke .rail, yang di layar sempit position: absolute. */
+.rail-head .rail-close {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 14px;
+}
+
 .rail-head h1 {
   margin: 0;
   font-family: var(--serif);
@@ -172,12 +182,16 @@ body {
   display: none;
 }
 
-/* Tab berbentuk pil: yang terpilih diberi latar dan garis tipis dari warna
-   teks yang ditipiskan, jadi otomatis lebih terang di tema gelap dan lebih
-   gelap di tema terang. */
+/* Tab berbentuk pil dengan lebar sama rata, jadi deretan tab selebar kotak
+   pencarian di atasnya. Yang terpilih diberi latar dan garis tipis dari
+   warna teks yang ditipiskan, jadi otomatis lebih terang di tema gelap dan
+   lebih gelap di tema terang. */
 .rail-tab {
+  flex: 1;
+  min-width: 0;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   height: 30px;
   padding: 0 11px;
@@ -461,6 +475,22 @@ body {
     inset: 0;
     z-index: 4;
     background: rgba(0, 0, 0, 0.35);
+  }
+
+  .rail-head .rail-close {
+    display: inline-flex;
+  }
+
+  /* Bilah atas sempit: tombol berteks (.btn-label) jadi ikon saja. Namanya
+     tetap terbaca pembaca layar lewat aria-label di tombolnya. */
+  .bar .btn-label {
+    display: none;
+  }
+
+  .bar .btn:has(.btn-label) {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
   }
 }
 

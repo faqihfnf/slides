@@ -52,6 +52,7 @@ const renderShell = (() => {
   const LOGO = new URL("../assets/logo.png", document.currentScript.src).href;
 
   const ICON_MENU = '<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/>';
+  const ICON_CLOSE = '<path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>';
   const ICON_SLIDESHOW = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke-linecap="round" stroke-linejoin="round"/>';
   const ICON_CHEV = '<path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>';
   const ICON_LOCK = '<path d="M6 10V7a6 6 0 0112 0v3M5 10h14a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1z" stroke-linecap="round" stroke-linejoin="round"/>';
@@ -309,6 +310,7 @@ const renderShell = (() => {
           </a>
         </h1>
         <p></p>
+        <button class="btn btn-icon rail-close" aria-label="Tutup sidebar"><svg viewBox="0 0 24 24">${ICON_CLOSE}</svg></button>
       </div>
       <div class="search-wrap">
         <input class="search" type="search" autocomplete="off">
@@ -346,6 +348,8 @@ const renderShell = (() => {
 
     const closeRail = () => sidebar.setAttribute("hidden-rail", "");
     backdrop.addEventListener("click", closeRail);
+    // Tombol ✕ di pojok sidebar, hanya tampil di layar sempit (chrome.css)
+    sidebar.querySelector(".rail-close").addEventListener("click", closeRail);
     list.addEventListener("click", event => {
       if (narrow.matches && event.target.closest(".rail-item")) closeRail();
     });
@@ -356,7 +360,7 @@ const renderShell = (() => {
     header.innerHTML = `
       <button class="btn btn-icon"><svg viewBox="0 0 24 24">${ICON_MENU}</svg></button>
       <h2></h2>
-      <button class="btn"><svg viewBox="0 0 24 24">${ICON_SLIDESHOW}</svg> Slideshow</button>
+      <button class="btn" aria-label="Slideshow"><svg viewBox="0 0 24 24">${ICON_SLIDESHOW}</svg><span class="btn-label">Slideshow</span></button>
       <button class="btn btn-icon" aria-label="Ganti tema terang atau gelap"><svg viewBox="0 0 24 24"></svg></button>`;
     const [toggle, slideshow, theme] = header.querySelectorAll("button");
     toggleBtn = toggle;
