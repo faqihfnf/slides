@@ -54,6 +54,12 @@ const Sidebar = (() => {
 
     const title = document.createElement("strong");
     title.appendChild(highlight(deck.title, query));
+    if (deck.locked) {
+      title.insertAdjacentHTML(
+        "beforeend",
+        ' <svg class="lock-icon" viewBox="0 0 24 24" aria-label="Terkunci"><path d="M6 10V7a6 6 0 0112 0v3M5 10h14a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1z" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      );
+    }
     const note = document.createElement("span");
     note.textContent = deck.note || "";
 

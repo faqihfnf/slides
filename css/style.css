@@ -13,6 +13,7 @@
   --muted: var(--brand-text-muted, #8b897f);
   --border: var(--brand-border, #d8d6ce);
   --accent: var(--brand-accent, #8a6f3f);
+  --danger: var(--brand-danger, #b3453a);
   --sans: var(--brand-font-body, "Inter", system-ui, sans-serif);
   --serif: var(--brand-font-display, "Fraunces", Georgia, serif);
 
@@ -271,6 +272,16 @@ body {
   font-weight: 600;
 }
 
+.lock-icon {
+  width: 12px;
+  height: 12px;
+  margin-left: 4px;
+  vertical-align: -1px;
+  stroke: var(--muted);
+  fill: none;
+  stroke-width: 2;
+}
+
 .empty {
   padding: 14px 8px;
   font-size: 13px;
@@ -368,6 +379,34 @@ body {
 .sheet .btn {
   width: 100%;
   justify-content: center;
+}
+
+/* Varian dialog di tengah layar (bukan menempel tombol), dipakai untuk
+   prompt password. */
+.sheet.center {
+  inset: 0;
+  margin: auto;
+  width: min(320px, calc(100vw - 32px));
+}
+
+.sheet.center::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.sheet-desc {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--secondary);
+}
+
+#passwordForm .search {
+  margin-bottom: 10px;
+}
+
+.sheet-error {
+  margin: -2px 0 10px;
+  font-size: 12.5px;
+  color: var(--danger);
 }
 
 /* --- Bilah atas dan tombol ------------------------------------------------ */
@@ -470,6 +509,34 @@ body {
 
 .stage:fullscreen .frame {
   border: 0;
+}
+
+.locked-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 280px;
+  text-align: center;
+}
+
+.locked-panel[hidden] {
+  display: none;
+}
+
+.locked-panel svg {
+  width: 34px;
+  height: 34px;
+  stroke: var(--muted);
+  fill: none;
+  stroke-width: 1.4;
+}
+
+.locked-panel p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 /* --- Responsif ------------------------------------------------------------ */

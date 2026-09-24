@@ -8,7 +8,7 @@ const Viewer = (() => {
   // sebagai cadangan. Harganya 3px isi slide per sisi (~0,3% dari lebar).
   const BLEED = 3;
 
-  let stage, frame, iframe;
+  let stage, frame, iframe, lockedPanel, unlockBtn;
   let lastW = 0, lastH = 0;
 
   function embedUrl(deck) {
@@ -54,8 +54,19 @@ const Viewer = (() => {
   }
 
   function show(deck) {
+    lockedPanel.hidden = true;
+    frame.hidden = false;
     const url = embedUrl(deck);
     if (iframe.src !== url) iframe.src = url;
+  }
+
+  /* Tampilkan panel "terkunci" alih-alih slide. onUnlock dipanggil kalau
+     tombol di panel itu diklik — pemanggil yang membuka dialog password. */
+  function lock(onUnlock) {
+    frame.hidden = true;
+    iframe.src = "about:blank";
+    lockedPanel.hidden = false;
+    unlockBtn.onclick = onUnlock;
   }
 
   function toggleFullscreen() {
@@ -67,6 +78,8 @@ const Viewer = (() => {
     stage = document.getElementById("stage");
     frame = document.getElementById("frame");
     iframe = document.getElementById("viewer");
+    lockedPanel = document.getElementById("lockedPanel");
+    unlockBtn = document.getElementById("unlockBtn");
 
     // Fokus masuk ke iframe supaya tombol panah langsung bisa dipakai
     iframe.addEventListener("load", () => iframe.focus());
@@ -81,5 +94,5 @@ const Viewer = (() => {
     fit();
   }
 
-  return { init, show };
+  return { init, show, lock };
 })();

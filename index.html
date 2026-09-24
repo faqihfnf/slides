@@ -19,6 +19,7 @@
   <script defer src="js/theme.js"></script>
   <script defer src="js/sidebar.js"></script>
   <script defer src="js/viewer.js"></script>
+  <script defer src="js/auth.js"></script>
   <script defer src="js/shortcuts.js"></script>
   <script defer src="js/app.js"></script>
 </head>
@@ -80,6 +81,15 @@
         <div class="frame" id="frame">
           <iframe id="viewer" title="Slide" allowfullscreen></iframe>
         </div>
+        <div class="locked-panel" id="lockedPanel" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 10V7a6 6 0 0112 0v3M5 10h14a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1z"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <p>Slide ini terkunci.</p>
+          <button class="btn" id="unlockBtn">Masukkan password</button>
+        </div>
       </div>
     </div>
 
@@ -97,6 +107,16 @@
       <li><span>Loncat ke slide</span><kbd>Angka, Enter</kbd></li>
     </ul>
     <button class="btn" id="shortcutClose">Tutup</button>
+  </dialog>
+
+  <dialog class="sheet center" id="passwordSheet" aria-label="Masukkan password">
+    <h3>Slide terkunci</h3>
+    <p class="sheet-desc">Slide ini butuh password untuk dibuka.</p>
+    <form id="passwordForm">
+      <input class="search" id="passwordInput" type="password" placeholder="Password" autocomplete="off" required>
+      <p class="sheet-error" id="passwordError" hidden>Password salah, coba lagi.</p>
+      <button class="btn" type="submit">Buka slide</button>
+    </form>
   </dialog>
 
 </body>

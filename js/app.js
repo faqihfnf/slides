@@ -4,11 +4,19 @@
   const label = document.getElementById("nowPlaying");
   const rail = document.getElementById("rail");
 
+  // Slide pembuka default: yang pertama tanpa kunci, supaya orang yang baru
+  // buka situs tanpa alamat spesifik tidak langsung disambut prompt password.
+  // Kalau semua slide ternyata terkunci, baru pakai yang paling pertama.
+  const firstOpenDeck = DECKS.find(d => !d.locked) || DECKS[0];
+
+  function unlockAndShow(deck) {
+    Auth.prompt(() => Viewer.show(deck));
+  }
+
   function openDeck(slug) {
-    const deck = DECKS.find(d => d.slug === slug) || DECKS[0];
+    const deck = DECKS.find(d => d.slug === slug) || firstOpenDeck;
     if (!deck) return;
 
-    Viewer.show(deck);
     label.textContent = deck.title;
     document.title = `${deck.title} — Faqih Nur Fahmi`;
 
@@ -16,10 +24,18 @@
       history.replaceState(null, "", `#${deck.slug}`);
     }
     Sidebar.setActive(deck);
+
+    if (deck.locked && !Auth.isUnlocked()) {
+      Viewer.lock(() => unlockAndShow(deck));
+      unlockAndShow(deck);
+    } else {
+      Viewer.show(deck);
+    }
   }
 
   Theme.init();
   Viewer.init();
+  Auth.init();
   Shortcuts.init();
   Sidebar.init({ decks: DECKS, onSelect: openDeck });
 
