@@ -63,6 +63,10 @@ const renderShell = (() => {
   let sidebar, list, search, tagline, title, slideshowBtn, toggleBtn;
   let placedActions = [], placedFooter = null;
 
+  // Layar sempit: sidebar menumpuk di atas isi (lihat chrome.css), jadi
+  // mulai tertutup dan ditutup lagi begitu pengunjung memilih sesuatu.
+  const narrow = matchMedia("(max-width: 720px)");
+
   // Kelompok yang sedang terbuka. Mulai kosong: semua tertutup saat halaman
   // dibuka, kecuali kelompok dari item yang sedang aktif.
   const expanded = new Set();
@@ -251,6 +255,19 @@ const renderShell = (() => {
         renderList();
       }
     });
+
+    // Tirai di belakang sidebar saat terbuka di layar sempit; ketuk untuk
+    // menutup (tombol menu tertimpa sidebar, jadi tidak bisa dipakai).
+    const backdrop = document.createElement("div");
+    backdrop.className = "rail-backdrop";
+    sidebar.after(backdrop);
+
+    const closeRail = () => sidebar.setAttribute("hidden-rail", "");
+    backdrop.addEventListener("click", closeRail);
+    list.addEventListener("click", event => {
+      if (narrow.matches && event.target.closest(".rail-item")) closeRail();
+    });
+    if (narrow.matches) closeRail();
 
     const header = document.getElementById("fnf-header");
     header.classList.add("bar");

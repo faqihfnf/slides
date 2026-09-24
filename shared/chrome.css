@@ -295,6 +295,11 @@ body {
   line-height: 1.5;
 }
 
+/* Tirai untuk layar sempit, lihat bagian Responsif */
+.rail-backdrop {
+  display: none;
+}
+
 /* --- Bilah atas dan tombol ------------------------------------------------ */
 
 .main {
@@ -379,6 +384,14 @@ body {
     position: absolute;
     z-index: 5;
     height: 100%;
+  }
+
+  .rail:not([hidden-rail]) + .rail-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    background: rgba(0, 0, 0, 0.35);
   }
 }
 
