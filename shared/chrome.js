@@ -31,7 +31,9 @@
                          Kelompok yang berisi item aktif otomatis dibuka.
      tabs              : opsional, pengganti groups kalau daftar perlu dipisah
                          jadi beberapa tab di bawah kotak pencarian:
-                         [{ id, label, groups }]. Tab yang berisi item aktif
+                         [{ id, label, icon, groups }]. icon opsional: isi
+                         <svg viewBox="0 0 24 24"> (path garis, tanpa
+                         tag svg-nya). Tab yang berisi item aktif
                          otomatis terpilih; klik tab hanya mengganti daftar,
                          tidak membuka halaman. Pencarian menyaring tab yang
                          sedang terbuka, dan tiap tab menampilkan jumlah
@@ -251,7 +253,8 @@ const renderShell = (() => {
       button.className = "rail-tab";
       button.setAttribute("role", "tab");
       button.dataset.tab = tab.id;
-      button.innerHTML = '<span></span><span class="count"></span>';
+      button.innerHTML = (tab.icon ? `<svg viewBox="0 0 24 24" aria-hidden="true">${tab.icon}</svg>` : "")
+        + '<span></span><span class="count"></span>';
       button.querySelector("span").textContent = tab.label;
       button.addEventListener("click", () => selectTab(tab.id));
       return button;
