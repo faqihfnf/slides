@@ -62,6 +62,7 @@
   }
 
   renderShell({
+    site: "slides",
     tagline: "Kumpulan Slide & Materi",
     sidebarLabel: "Daftar slide",
     searchPlaceholder: "Cari judul slide",

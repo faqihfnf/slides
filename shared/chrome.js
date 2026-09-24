@@ -23,6 +23,9 @@
    kelompok yang sedang terbuka tetap terjaga.
 
    config:
+     site              : id situs ini di daftar SITES di bawah ("slides" atau
+                         "courses"). Menampilkan dropdown pemilih situs di
+                         pojok kanan baris logo untuk pindah ke situs lain.
      tagline           : teks kecil di bawah logo
      sidebarLabel      : nama sidebar untuk pembaca layar, contoh "Daftar slide"
      searchPlaceholder : placeholder kotak pencarian
@@ -55,9 +58,23 @@ const renderShell = (() => {
   const ICON_CLOSE = '<path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>';
   const ICON_SLIDESHOW = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke-linecap="round" stroke-linejoin="round"/>';
   const ICON_CHEV = '<path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>';
+  const ICON_CHECK = '<path d="M5 12.5l4.5 4.5L19 7" stroke-linecap="round" stroke-linejoin="round"/>';
+
+  // Situs yang bisa dipilih lewat dropdown di pojok kanan baris logo. Situs baru cukup
+  // ditambahkan di sini. local = alamat saat dibuka dari Live Server
+  // (localhost / 127.0.0.1) yang dijalankan dari folder induk berisi
+  // slides/ dan courses/.
+  const SITES = [
+    { id: "faqih", label: "Home", note: "Halaman utama web", href: "https://faqih.id/", local: "https://faqih.id/" },
+    { id: "slides", label: "Slides", note: "Kumpulan slide & materi", href: "https://slides.faqih.id/", local: "../slides/index.html" },
+    { id: "courses", label: "Courses", note: "Course & webinar", href: "https://courses.faqih.id/", local: "../courses/index.html" },
+  ];
+  const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+
   const ICON_LOCK = '<path d="M6 10V7a6 6 0 0112 0v3M5 10h14a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1z" stroke-linecap="round" stroke-linejoin="round"/>';
 
   let config = {
+    site: null,
     tagline: "",
     sidebarLabel: "Navigasi",
     searchPlaceholder: "Cari judul",
@@ -66,13 +83,15 @@ const renderShell = (() => {
     tabs: null,
     headerTitle: "",
     showSlideshow: false,
-    onSlideshow: () => { },
+    onSlideshow: () => {},
     headerActions: [],
     sidebarFooter: null,
   };
 
   let sidebar, list, search, tagline, title, slideshowBtn, toggleBtn, tabBar;
-  let placedActions = [], placedFooter = null;
+  let placedActions = [],
+    placedFooter = null;
+  let switcher, switchBtn, siteMenu;
 
   // Tab yang sedang dipilih (id), null kalau situs tidak memakai tab
   let currentTab = null;
@@ -138,8 +157,7 @@ const renderShell = (() => {
       paintIcon();
 
       button.addEventListener("click", () => apply(isDark() ? "light" : "dark"));
-      matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", paintIcon);
+      matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paintIcon);
     }
 
     return { init };
@@ -149,9 +167,7 @@ const renderShell = (() => {
 
   function matches(item, group, query) {
     if (!query) return true;
-    return [item.title, item.subtitle, group.label]
-      .filter(Boolean)
-      .some(field => field.toLowerCase().includes(query));
+    return [item.title, item.subtitle, group.label].filter(Boolean).some((field) => field.toLowerCase().includes(query));
   }
 
   /* Tandai potongan judul yang cocok dengan kata kunci */
@@ -171,8 +187,7 @@ const renderShell = (() => {
     const head = document.createElement("button");
     head.className = "group-head";
     head.setAttribute("aria-expanded", String(isOpen));
-    head.innerHTML = `<svg class="chev" viewBox="0 0 24 24">${ICON_CHEV}</svg>`
-      + "<span></span><span class=\"count\"></span>";
+    head.innerHTML = `<svg class="chev" viewBox="0 0 24 24">${ICON_CHEV}</svg>` + '<span></span><span class="count"></span>';
     head.querySelector("span").textContent = label;
     head.querySelector(".count").textContent = count;
     head.addEventListener("click", () => {
@@ -192,10 +207,7 @@ const renderShell = (() => {
     const title = document.createElement("strong");
     title.appendChild(highlight(item.title, query));
     if (item.locked) {
-      title.insertAdjacentHTML(
-        "beforeend",
-        ` <svg class="lock-icon" viewBox="0 0 24 24" aria-label="Terkunci">${ICON_LOCK}</svg>`
-      );
+      title.insertAdjacentHTML("beforeend", ` <svg class="lock-icon" viewBox="0 0 24 24" aria-label="Terkunci">${ICON_LOCK}</svg>`);
     }
     const subtitle = document.createElement("span");
     subtitle.textContent = item.subtitle || "";
@@ -207,31 +219,30 @@ const renderShell = (() => {
   /* Kelompok beserta item yang lolos pencarian; kelompok kosong dibuang */
   function filterGroups(groups, query) {
     return groups
-      .map(group => ({
+      .map((group) => ({
         label: group.label,
-        items: group.items.filter(item => matches(item, group, query)),
+        items: group.items.filter((item) => matches(item, group, query)),
       }))
-      .filter(group => group.items.length);
+      .filter((group) => group.items.length);
   }
 
-  const countItems = groups => groups.reduce((sum, group) => sum + group.items.length, 0);
+  const countItems = (groups) => groups.reduce((sum, group) => sum + group.items.length, 0);
 
   function activeGroups() {
     if (!config.tabs) return config.groups;
-    const tab = config.tabs.find(entry => entry.id === currentTab);
+    const tab = config.tabs.find((entry) => entry.id === currentTab);
     return tab ? tab.groups : [];
   }
 
   /* Perbarui tanda tab terpilih, dan jumlah hasil selama mencari */
   function paintTabs(query) {
     if (!config.tabs) return;
-    tabBar.querySelectorAll(".rail-tab").forEach(button => {
-      const tab = config.tabs.find(entry => entry.id === button.dataset.tab);
+    tabBar.querySelectorAll(".rail-tab").forEach((button) => {
+      const tab = config.tabs.find((entry) => entry.id === button.dataset.tab);
       const selected = tab.id === currentTab;
       button.setAttribute("aria-selected", String(selected));
       button.tabIndex = selected ? 0 : -1;
-      button.querySelector(".count").textContent =
-        query ? countItems(filterGroups(tab.groups, query)) : "";
+      button.querySelector(".count").textContent = query ? countItems(filterGroups(tab.groups, query)) : "";
     });
   }
 
@@ -248,18 +259,19 @@ const renderShell = (() => {
     else list.removeAttribute("role");
     if (!config.tabs) return;
 
-    tabBar.replaceChildren(...config.tabs.map(tab => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "rail-tab";
-      button.setAttribute("role", "tab");
-      button.dataset.tab = tab.id;
-      button.innerHTML = (tab.icon ? `<svg viewBox="0 0 24 24" aria-hidden="true">${tab.icon}</svg>` : "")
-        + '<span></span><span class="count"></span>';
-      button.querySelector("span").textContent = tab.label;
-      button.addEventListener("click", () => selectTab(tab.id));
-      return button;
-    }));
+    tabBar.replaceChildren(
+      ...config.tabs.map((tab) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "rail-tab";
+        button.setAttribute("role", "tab");
+        button.dataset.tab = tab.id;
+        button.innerHTML = (tab.icon ? `<svg viewBox="0 0 24 24" aria-hidden="true">${tab.icon}</svg>` : "") + '<span></span><span class="count"></span>';
+        button.querySelector("span").textContent = tab.label;
+        button.addEventListener("click", () => selectTab(tab.id));
+        return button;
+      }),
+    );
   }
 
   function renderList() {
@@ -284,7 +296,7 @@ const renderShell = (() => {
       const ul = document.createElement("ul");
       ul.className = "group-items";
       ul.hidden = !isOpen;
-      items.forEach(item => {
+      items.forEach((item) => {
         const li = document.createElement("li");
         li.appendChild(itemLink(item, query));
         ul.appendChild(li);
@@ -296,6 +308,38 @@ const renderShell = (() => {
     });
   }
 
+  /* --- Pemilih situs di samping logo -------------------------------------- */
+
+  function setSiteMenu(open) {
+    siteMenu.hidden = !open;
+    switchBtn.setAttribute("aria-expanded", String(open));
+  }
+
+  /* Dropdown hanya tampil kalau situs ini terdaftar di SITES (config.site) */
+  function paintSiteSwitch() {
+    const current = SITES.find((site) => site.id === config.site);
+    switcher.hidden = !current;
+    if (!current) return;
+
+    switchBtn.querySelector("span").textContent = current.label;
+    switchBtn.setAttribute("aria-label", `Situs: ${current.label}. Pindah ke situs lain`);
+    siteMenu.replaceChildren(
+      ...SITES.map((site) => {
+        const link = document.createElement("a");
+        link.className = "site-option";
+        link.href = IS_LOCAL ? site.local : site.href;
+        if (site === current) link.setAttribute("aria-current", "page");
+        link.innerHTML = '<span class="site-option-text"><strong></strong><span></span></span>' + (site === current ? `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON_CHECK}</svg>` : "");
+        link.querySelector("strong").textContent = site.label;
+        link.querySelector(".site-option-text span").textContent = site.note;
+
+        const item = document.createElement("li");
+        item.appendChild(link);
+        return item;
+      }),
+    );
+  }
+
   /* --- Kerangka, dibangun sekali di panggilan pertama --------------------- */
 
   function build() {
@@ -303,12 +347,18 @@ const renderShell = (() => {
     sidebar.classList.add("rail");
     sidebar.innerHTML = `
       <div class="rail-head">
-        <h1>
-          <a class="brand" href="https://faqih.id/">
-            <img src="${LOGO}" alt="" width="34" height="34">
-            <span>FnF.</span>
-          </a>
-        </h1>
+        <div class="brand-row">
+          <h1>
+            <a class="brand" href="https://faqih.id/">
+              <img src="${LOGO}" alt="" width="34" height="34">
+              <span>FnF.</span>
+            </a>
+          </h1>
+          <div class="site-switch" hidden>
+            <button class="site-switch-btn" type="button" aria-expanded="false" aria-controls="fnf-site-menu"><span></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true">${ICON_CHEV}</svg></button>
+          </div>
+          <ul class="site-menu" id="fnf-site-menu" hidden></ul>
+        </div>
         <p></p>
         <button class="btn btn-icon rail-close" aria-label="Tutup sidebar"><svg viewBox="0 0 24 24">${ICON_CLOSE}</svg></button>
       </div>
@@ -321,19 +371,47 @@ const renderShell = (() => {
     search = sidebar.querySelector(".search");
     tabBar = sidebar.querySelector(".rail-tabs");
     list = sidebar.querySelector(".rail-list");
+    switcher = sidebar.querySelector(".site-switch");
+    switchBtn = sidebar.querySelector(".site-switch-btn");
+    siteMenu = sidebar.querySelector(".site-menu");
+
+    // Pemilih situs: buka-tutup lewat tombol, tutup saat klik di luar atau
+    // Escape. Memilih situs yang sedang dibuka cukup menutup menunya.
+    switchBtn.addEventListener("click", () => setSiteMenu(siteMenu.hidden));
+    document.addEventListener("click", (event) => {
+      const inside = switchBtn.contains(event.target) || siteMenu.contains(event.target);
+      if (!siteMenu.hidden && !inside) setSiteMenu(false);
+    });
+    // Klik di dalam iframe (slide, video) tidak sampai ke halaman ini, tapi
+    // jendela kehilangan fokus; tutup juga di situ.
+    addEventListener("blur", () => {
+      if (!siteMenu.hidden) setSiteMenu(false);
+    });
+    sidebar.querySelector(".brand-row").addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !siteMenu.hidden) {
+        setSiteMenu(false);
+        switchBtn.focus();
+      }
+    });
+    siteMenu.addEventListener("click", (event) => {
+      if (event.target.closest('[aria-current="page"]')) {
+        event.preventDefault();
+        setSiteMenu(false);
+      }
+    });
 
     // Panah kiri/kanan berpindah tab, seperti tablist pada umumnya
-    tabBar.addEventListener("keydown", event => {
+    tabBar.addEventListener("keydown", (event) => {
       const step = { ArrowLeft: -1, ArrowRight: 1 }[event.key];
       if (!step || !config.tabs) return;
-      const at = config.tabs.findIndex(tab => tab.id === currentTab);
+      const at = config.tabs.findIndex((tab) => tab.id === currentTab);
       const next = config.tabs[(at + step + config.tabs.length) % config.tabs.length];
       selectTab(next.id, true);
       event.preventDefault();
     });
 
     search.addEventListener("input", renderList);
-    search.addEventListener("keydown", event => {
+    search.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         search.value = "";
         renderList();
@@ -350,7 +428,7 @@ const renderShell = (() => {
     backdrop.addEventListener("click", closeRail);
     // Tombol ✕ di pojok sidebar, hanya tampil di layar sempit (chrome.css)
     sidebar.querySelector(".rail-close").addEventListener("click", closeRail);
-    list.addEventListener("click", event => {
+    list.addEventListener("click", (event) => {
       if (narrow.matches && event.target.closest(".rail-item")) closeRail();
     });
     if (narrow.matches) closeRail();
@@ -375,7 +453,7 @@ const renderShell = (() => {
   /* Pasang elemen milik situs pemakai. Elemen yang sama boleh dikirim ulang;
      yang tidak dikirim lagi dilepas. */
   function placeExtras() {
-    placedActions.forEach(el => {
+    placedActions.forEach((el) => {
       if (!config.headerActions.includes(el)) el.remove();
     });
     slideshowBtn.before(...config.headerActions);
@@ -390,12 +468,10 @@ const renderShell = (() => {
     if (!sidebar) build();
     config = { ...config, ...next };
 
+    paintSiteSwitch();
     tagline.textContent = config.tagline;
     sidebar.setAttribute("aria-label", config.sidebarLabel);
-    toggleBtn.setAttribute(
-      "aria-label",
-      `Tampilkan atau sembunyikan ${config.sidebarLabel.toLowerCase()}`
-    );
+    toggleBtn.setAttribute("aria-label", `Tampilkan atau sembunyikan ${config.sidebarLabel.toLowerCase()}`);
     search.placeholder = config.searchPlaceholder;
     search.setAttribute("aria-label", config.searchPlaceholder);
     title.textContent = config.headerTitle;
@@ -403,22 +479,24 @@ const renderShell = (() => {
     placeExtras();
 
     if ("groups" in next) {
-      config.groups.forEach(group => {
-        if (group.items.some(item => item.active)) expanded.add(groupKey(null, group.label));
+      config.groups.forEach((group) => {
+        if (group.items.some((item) => item.active)) expanded.add(groupKey(null, group.label));
       });
     }
     if ("tabs" in next) {
       buildTabs();
       const tabs = config.tabs || [];
-      const hasActive = tab => tab.groups.some(group => group.items.some(item => item.active));
+      const hasActive = (tab) => tab.groups.some((group) => group.items.some((item) => item.active));
       // Ikuti tab dari item yang sedang dibuka; kalau tidak ada, pertahankan
       // pilihan sekarang selama tab itu masih ada.
       const withActive = tabs.find(hasActive);
       if (withActive) currentTab = withActive.id;
-      else if (!tabs.some(tab => tab.id === currentTab)) currentTab = tabs.length ? tabs[0].id : null;
-      tabs.forEach(tab => tab.groups.forEach(group => {
-        if (group.items.some(item => item.active)) expanded.add(groupKey(tab.id, group.label));
-      }));
+      else if (!tabs.some((tab) => tab.id === currentTab)) currentTab = tabs.length ? tabs[0].id : null;
+      tabs.forEach((tab) =>
+        tab.groups.forEach((group) => {
+          if (group.items.some((item) => item.active)) expanded.add(groupKey(tab.id, group.label));
+        }),
+      );
     }
     renderList();
   };

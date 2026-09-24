@@ -82,8 +82,132 @@ body {
 }
 
 .rail-head {
-  padding: 24px 28px;
+  padding: 20px 16px;
   border-bottom: 1px solid var(--border);
+}
+
+/* --- Pemilih situs: dropdown di pojok kanan baris logo ------------------- */
+
+.brand-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.site-switch[hidden] {
+  display: none;
+}
+
+.site-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 7px 0 9px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--secondary);
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.site-switch-btn:hover,
+.site-switch-btn[aria-expanded="true"] {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.site-switch-btn .chev {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  transition: transform 0.2s;
+}
+
+.site-switch-btn[aria-expanded="true"] .chev {
+  transform: rotate(180deg);
+}
+
+/* Menu muncul di bawah baris logo, selebar baris itu, jadi selalu berada
+   di dalam sidebar */
+.site-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.24);
+}
+
+.site-menu[hidden] {
+  display: none;
+}
+
+.site-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  color: var(--secondary);
+  text-decoration: none;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.site-option:hover {
+  background: var(--elevated);
+  color: var(--text);
+}
+
+.site-option-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.site-option strong {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.site-option-text span {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.site-option[aria-current="page"] strong {
+  color: var(--accent);
+}
+
+.site-option svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  stroke: var(--accent);
+  fill: none;
+  stroke-width: 2;
 }
 
 /* Tombol tutup sidebar, hanya di layar sempit (lihat Responsif): di sana
@@ -172,10 +296,14 @@ body {
 
 /* --- Tab di bawah pencarian (opsional, lihat config.tabs) ----------------- */
 
+/* Garis bawah selebar sidebar memisahkan tab dari daftar, sama seperti
+   garis di bawah kepala sidebar */
 .rail-tabs {
   display: flex;
   gap: 4px;
-  margin: 0 16px 8px;
+  margin-bottom: 6px;
+  padding: 0 16px 12px;
+  border-bottom: 1px solid var(--border);
 }
 
 .rail-tabs[hidden] {
@@ -477,8 +605,19 @@ body {
     background: rgba(0, 0, 0, 0.35);
   }
 
+  .rail-head {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   .rail-head .rail-close {
     display: inline-flex;
+  }
+
+  /* Sisakan tempat untuk tombol ✕ di pojok, supaya dropdown tidak
+     bertabrakan dengannya */
+  .brand-row {
+    padding-right: 40px;
   }
 
   /* Bilah atas sempit: tombol berteks (.btn-label) jadi ikon saja. Namanya
