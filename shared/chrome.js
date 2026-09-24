@@ -29,6 +29,13 @@
      emptyText         : pesan kalau pencarian tidak menemukan apa-apa
      groups            : [{ label, items: [{ title, subtitle, href, active, locked }] }]
                          Kelompok yang berisi item aktif otomatis dibuka.
+     tabs              : opsional, pengganti groups kalau daftar perlu dipisah
+                         jadi beberapa tab di bawah kotak pencarian:
+                         [{ id, label, groups }]. Tab yang berisi item aktif
+                         otomatis terpilih; klik tab hanya mengganti daftar,
+                         tidak membuka halaman. Pencarian menyaring tab yang
+                         sedang terbuka, dan tiap tab menampilkan jumlah
+                         hasilnya supaya kelihatan kalau ada di tab sebelah.
      headerTitle       : judul di bilah atas
      showSlideshow     : tampilkan tombol Slideshow (true di slides, false di course)
      onSlideshow       : dipanggil saat tombol Slideshow diklik
@@ -53,6 +60,7 @@ const renderShell = (() => {
     searchPlaceholder: "Cari judul",
     emptyText: "Tidak ada yang cocok dengan pencarian itu.",
     groups: [],
+    tabs: null,
     headerTitle: "",
     showSlideshow: false,
     onSlideshow: () => { },
@@ -60,16 +68,21 @@ const renderShell = (() => {
     sidebarFooter: null,
   };
 
-  let sidebar, list, search, tagline, title, slideshowBtn, toggleBtn;
+  let sidebar, list, search, tagline, title, slideshowBtn, toggleBtn, tabBar;
   let placedActions = [], placedFooter = null;
+
+  // Tab yang sedang dipilih (id), null kalau situs tidak memakai tab
+  let currentTab = null;
 
   // Layar sempit: sidebar menumpuk di atas isi (lihat chrome.css), jadi
   // mulai tertutup dan ditutup lagi begitu pengunjung memilih sesuatu.
   const narrow = matchMedia("(max-width: 720px)");
 
   // Kelompok yang sedang terbuka. Mulai kosong: semua tertutup saat halaman
-  // dibuka, kecuali kelompok dari item yang sedang aktif.
+  // dibuka, kecuali kelompok dari item yang sedang aktif. Kuncinya memuat id
+  // tab, karena nama kelompok yang sama (misal "HR") bisa ada di dua tab.
   const expanded = new Set();
+  const groupKey = (tabId, label) => `${tabId ?? ""}\u0000${label}`;
 
   /* --- Tema terang/gelap -------------------------------------------------- */
 
@@ -151,6 +164,7 @@ const renderShell = (() => {
   }
 
   function groupHead(label, count, isOpen) {
+    const key = groupKey(currentTab, label);
     const head = document.createElement("button");
     head.className = "group-head";
     head.setAttribute("aria-expanded", String(isOpen));
@@ -159,8 +173,8 @@ const renderShell = (() => {
     head.querySelector("span").textContent = label;
     head.querySelector(".count").textContent = count;
     head.addEventListener("click", () => {
-      if (expanded.has(label)) expanded.delete(label);
-      else expanded.add(label);
+      if (expanded.has(key)) expanded.delete(key);
+      else expanded.add(key);
       renderList();
     });
     return head;
@@ -187,16 +201,69 @@ const renderShell = (() => {
     return link;
   }
 
-  function renderList() {
-    const query = search.value.trim().toLowerCase();
-    list.innerHTML = "";
-
-    const visible = config.groups
+  /* Kelompok beserta item yang lolos pencarian; kelompok kosong dibuang */
+  function filterGroups(groups, query) {
+    return groups
       .map(group => ({
         label: group.label,
         items: group.items.filter(item => matches(item, group, query)),
       }))
       .filter(group => group.items.length);
+  }
+
+  const countItems = groups => groups.reduce((sum, group) => sum + group.items.length, 0);
+
+  function activeGroups() {
+    if (!config.tabs) return config.groups;
+    const tab = config.tabs.find(entry => entry.id === currentTab);
+    return tab ? tab.groups : [];
+  }
+
+  /* Perbarui tanda tab terpilih, dan jumlah hasil selama mencari */
+  function paintTabs(query) {
+    if (!config.tabs) return;
+    tabBar.querySelectorAll(".rail-tab").forEach(button => {
+      const tab = config.tabs.find(entry => entry.id === button.dataset.tab);
+      const selected = tab.id === currentTab;
+      button.setAttribute("aria-selected", String(selected));
+      button.tabIndex = selected ? 0 : -1;
+      button.querySelector(".count").textContent =
+        query ? countItems(filterGroups(tab.groups, query)) : "";
+    });
+  }
+
+  function selectTab(id, focus = false) {
+    currentTab = id;
+    renderList();
+    if (focus) tabBar.querySelector(`[data-tab="${CSS.escape(id)}"]`).focus();
+  }
+
+  /* Tombol tab dibuat ulang hanya saat daftar tab dikirim ulang */
+  function buildTabs() {
+    tabBar.hidden = !config.tabs;
+    if (config.tabs) list.setAttribute("role", "tabpanel");
+    else list.removeAttribute("role");
+    if (!config.tabs) return;
+
+    tabBar.replaceChildren(...config.tabs.map(tab => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "rail-tab";
+      button.setAttribute("role", "tab");
+      button.dataset.tab = tab.id;
+      button.innerHTML = '<span></span><span class="count"></span>';
+      button.querySelector("span").textContent = tab.label;
+      button.addEventListener("click", () => selectTab(tab.id));
+      return button;
+    }));
+  }
+
+  function renderList() {
+    const query = search.value.trim().toLowerCase();
+    list.innerHTML = "";
+    paintTabs(query);
+
+    const visible = filterGroups(activeGroups(), query);
 
     if (!visible.length) {
       const li = document.createElement("li");
@@ -208,7 +275,7 @@ const renderShell = (() => {
 
     visible.forEach(({ label, items }) => {
       // Saat mencari, semua kelompok dibuka supaya hasilnya langsung terlihat
-      const isOpen = query ? true : expanded.has(label);
+      const isOpen = query ? true : expanded.has(groupKey(currentTab, label));
 
       const ul = document.createElement("ul");
       ul.className = "group-items";
@@ -243,10 +310,22 @@ const renderShell = (() => {
       <div class="search-wrap">
         <input class="search" type="search" autocomplete="off">
       </div>
+      <div class="rail-tabs" role="tablist" hidden></div>
       <ul class="rail-list"></ul>`;
     tagline = sidebar.querySelector(".rail-head p");
     search = sidebar.querySelector(".search");
+    tabBar = sidebar.querySelector(".rail-tabs");
     list = sidebar.querySelector(".rail-list");
+
+    // Panah kiri/kanan berpindah tab, seperti tablist pada umumnya
+    tabBar.addEventListener("keydown", event => {
+      const step = { ArrowLeft: -1, ArrowRight: 1 }[event.key];
+      if (!step || !config.tabs) return;
+      const at = config.tabs.findIndex(tab => tab.id === currentTab);
+      const next = config.tabs[(at + step + config.tabs.length) % config.tabs.length];
+      selectTab(next.id, true);
+      event.preventDefault();
+    });
 
     search.addEventListener("input", renderList);
     search.addEventListener("keydown", event => {
@@ -318,8 +397,21 @@ const renderShell = (() => {
 
     if ("groups" in next) {
       config.groups.forEach(group => {
-        if (group.items.some(item => item.active)) expanded.add(group.label);
+        if (group.items.some(item => item.active)) expanded.add(groupKey(null, group.label));
       });
+    }
+    if ("tabs" in next) {
+      buildTabs();
+      const tabs = config.tabs || [];
+      const hasActive = tab => tab.groups.some(group => group.items.some(item => item.active));
+      // Ikuti tab dari item yang sedang dibuka; kalau tidak ada, pertahankan
+      // pilihan sekarang selama tab itu masih ada.
+      const withActive = tabs.find(hasActive);
+      if (withActive) currentTab = withActive.id;
+      else if (!tabs.some(tab => tab.id === currentTab)) currentTab = tabs.length ? tabs[0].id : null;
+      tabs.forEach(tab => tab.groups.forEach(group => {
+        if (group.items.some(item => item.active)) expanded.add(groupKey(tab.id, group.label));
+      }));
     }
     renderList();
   };
