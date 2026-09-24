@@ -84,8 +84,6 @@ const Viewer = (() => {
     // Fokus masuk ke iframe supaya tombol panah langsung bisa dipakai
     iframe.addEventListener("load", () => iframe.focus());
 
-    document.getElementById("fsBtn")
-      .addEventListener("click", toggleFullscreen);
     document.addEventListener("fullscreenchange", () => setTimeout(() => iframe.focus(), 60));
 
     // Mengikuti panggung, bukan jendela: ikut benar saat sidebar dibuka-tutup,
@@ -94,5 +92,5 @@ const Viewer = (() => {
     fit();
   }
 
-  return { init, show, lock };
+  return { init, show, lock, toggleFullscreen };
 })();
