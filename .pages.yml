@@ -1,0 +1,51 @@
+# Form editor Pages CMS (app.pagescms.org) untuk decks.json.
+# Urutan di daftar = urutan di sidebar; urutan kelompok mengikuti kemunculan
+# pertama category-nya.
+
+content:
+  - name: decks
+    label: Slides
+    type: file
+    path: decks.json
+    format: json
+    list: true
+    fields:
+      - name: category
+        label: Kategori
+        type: string
+        description: Kelompok di sidebar, contoh "HR" atau "BNSP". Kalau dikosongkan, masuk kelompok "Lainnya".
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+        description: Dipakai di alamat, contoh slides.faqih.id/#uraian-jabatan. Harus unik.
+        pattern:
+          regex: "^[a-z0-9]+(-[a-z0-9]+)*$"
+          message: Huruf kecil, angka, dan tanda minus saja, contoh uraian-jabatan
+      - name: title
+        label: Judul
+        type: string
+        required: true
+        description: Judul di sidebar dan bilah atas.
+      - name: note
+        label: Keterangan
+        type: string
+        description: Keterangan kecil di bawah judul, boleh dikosongkan.
+      - name: embedId
+        label: Embed ID
+        type: string
+        required: true
+        description: Dari Google Slides → Bagikan → Publikasikan di web → Sematkan. Ambil bagian panjang setelah /presentation/d/e/ dan sebelum /pubembed.
+      - name: locked
+        label: Terkunci
+        type: boolean
+        description: Kalau dicentang, slide tetap tampil di sidebar (dengan ikon gembok) tapi butuh password untuk dibuka. Password diatur di js/auth.js.
+      - name: fileId
+        label: File ID (untuk Download)
+        type: string
+        description: >-
+          Opsional. ID ASLI file Google Slides (beda dari Embed ID), dari alamat
+          docs.google.com/presentation/d/INI_FILE_ID_NYA/edit. Kalau diisi dan
+          slide tidak terkunci, tombol Download PDF muncul. Syarat di Google
+          Drive: share "Anyone with the link" (minimal Viewer) dan opsi
+          "Disable download/print/copy" untuk viewer JANGAN dicentang.

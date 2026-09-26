@@ -8,7 +8,7 @@ const Viewer = (() => {
   // sebagai cadangan. Harganya 3px isi slide per sisi (~0,3% dari lebar).
   const BLEED = 3;
 
-  let stage, frame, iframe, lockedPanel, unlockBtn;
+  let stage, frame, iframe, lockedPanel, unlockBtn, errorPanel, errorText;
   let lastW = 0, lastH = 0;
 
   function embedUrl(deck) {
@@ -69,6 +69,14 @@ const Viewer = (() => {
     unlockBtn.onclick = onUnlock;
   }
 
+  /* Ganti panggung dengan pesan, misalnya saat decks.json gagal dimuat */
+  function error(text) {
+    frame.hidden = true;
+    lockedPanel.hidden = true;
+    errorText.textContent = text;
+    errorPanel.hidden = false;
+  }
+
   function toggleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen();
     else stage.requestFullscreen();
@@ -80,6 +88,8 @@ const Viewer = (() => {
     iframe = document.getElementById("viewer");
     lockedPanel = document.getElementById("lockedPanel");
     unlockBtn = document.getElementById("unlockBtn");
+    errorPanel = document.getElementById("errorPanel");
+    errorText = document.getElementById("errorText");
 
     // Fokus masuk ke iframe supaya tombol panah langsung bisa dipakai
     iframe.addEventListener("load", () => iframe.focus());
@@ -92,5 +102,5 @@ const Viewer = (() => {
     fit();
   }
 
-  return { init, show, lock, toggleFullscreen };
+  return { init, show, lock, error, toggleFullscreen };
 })();

@@ -1,4 +1,5 @@
-/* Gerbang password untuk slide yang ditandai locked: true di decks.js.
+/* Gerbang password untuk slide yang ditandai locked: true di decks.json
+   (kolom "Terkunci" di Pages CMS).
    Situs ini statis (tanpa server), jadi ini cuma penghalang ringan — siapa
    pun yang membaca kode sumber tetap bisa menemukan hash-nya. Cukup untuk
    menyembunyikan slide dari orang iseng, bukan untuk data rahasia beneran. */
