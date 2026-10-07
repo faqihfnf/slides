@@ -357,10 +357,10 @@ const renderShell = (() => {
           <div class="site-switch" hidden>
             <button class="site-switch-btn" type="button" aria-expanded="false" aria-controls="fnf-site-menu"><span></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true">${ICON_CHEV}</svg></button>
           </div>
+          <button class="btn btn-icon rail-close" aria-label="Tutup sidebar"><svg viewBox="0 0 24 24">${ICON_CLOSE}</svg></button>
           <ul class="site-menu" id="fnf-site-menu" hidden></ul>
         </div>
         <p></p>
-        <button class="btn btn-icon rail-close" aria-label="Tutup sidebar"><svg viewBox="0 0 24 24">${ICON_CLOSE}</svg></button>
       </div>
       <div class="search-wrap">
         <input class="search" type="search" autocomplete="off">

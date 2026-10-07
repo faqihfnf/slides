@@ -212,12 +212,17 @@ body {
 
 /* Tombol tutup sidebar, hanya di layar sempit (lihat Responsif): di sana
    sidebar menutupi tombol menu, jadi perlu jalan keluar yang terlihat.
-   Posisinya menempel ke .rail, yang di layar sempit position: absolute. */
+   Duduk di baris logo, di sebelah kanan dropdown, setinggi dropdown. */
 .rail-head .rail-close {
   display: none;
-  position: absolute;
-  top: 16px;
-  right: 14px;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.rail-head .rail-close svg {
+  width: 13px;
+  height: 13px;
 }
 
 .rail-head h1 {
@@ -588,7 +593,7 @@ body {
 
 @media (max-width: 720px) {
   :root {
-    --rail: 260px;
+    --rail: 100vw;
   }
 
   .rail {
@@ -614,10 +619,18 @@ body {
     display: inline-flex;
   }
 
-  /* Sisakan tempat untuk tombol ✕ di pojok, supaya dropdown tidak
-     bertabrakan dengannya */
+  /* Sidebar selebar layar, jadi garis kanannya tidak perlu */
+  .rail {
+    border-right: 0;
+  }
+
+  /* Logo di kiri; dropdown dan tombol ✕ berdampingan di kanan */
+  .rail-head h1 {
+    margin-right: auto;
+  }
+
   .brand-row {
-    padding-right: 40px;
+    gap: 8px;
   }
 
   /* Bilah atas sempit: tombol berteks (.btn-label) jadi ikon saja. Namanya
